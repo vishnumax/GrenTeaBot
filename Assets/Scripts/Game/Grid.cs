@@ -7,7 +7,6 @@ using UnityEngine.Tilemaps;
 using System;
 using TictTackGame.Act;
 using Random = UnityEngine.Random;
-using UnityEngine.WSA;
 
 public class Grid : MonoBehaviour,ITile
 {
@@ -40,6 +39,12 @@ public class Grid : MonoBehaviour,ITile
         GameActions.RestartAction += RestartAction;
     }
 
+    private void OnDisable()
+    {
+        GameActions.RestartAction();
+    }
+
+
     /// <summary>
     /// Action implemented on turning the tiles 
     /// </summary>
@@ -60,6 +65,12 @@ public class Grid : MonoBehaviour,ITile
             Vector2 pos = Vector2.zero;
 
             List<Tile> unMarktiles = tiles.Where(x => !x.isMark).ToList();
+
+            if(unMarktiles.Count ==0)
+            {
+                StatusManager.Instance.EnableMenu(true, "No more turns");
+                return;
+            }
 
             int randomIndex = Random.Range(0, unMarktiles.Count);
             
@@ -112,12 +123,12 @@ public class Grid : MonoBehaviour,ITile
 
         string message = playerSet switch
         {
-            PlayerSet.first => "Player 1 Turn",
-            PlayerSet.second => "Player 2 Turn",
+            PlayerSet.first => "Player Turn",
+            PlayerSet.second => "Computer Turn",
             _ => throw new System.NotImplementedException()
         };
 
-        StatusManager.Instance.Message(message);
+        //StatusManager.Instance.Message(message);
     }
 
     #region RESULT
@@ -145,51 +156,62 @@ public class Grid : MonoBehaviour,ITile
         //Check Player one Result
         if (results_1.Count >=3)
         {
-            results_1 = results_1.TakeLast(3).ToList();
+            //results_1 = results_1.TakeLast(3).ToList();
 
             Vector2 firstVector = results_1[0].pos;
 
             bool isWin = false;
 
-            isWin = results_1.All(x => x.pos.x == firstVector.x);
-            if (isWin)
-            {    
-                ShowResult(PlayerSet.first, results_1);
-                return;
-            }
 
-            isWin = results_1.All(x => x.pos.y == firstVector.y);
-            if (isWin)
+            List<Result> horResultsOne = new List<Result>(); 
+            for(int row =0; row< matrix;++row)
             {
-                ShowResult(PlayerSet.first, results_1);
-                return;
+                horResultsOne = results_1.Where(x=>x.pos.x == row).ToList();
+
+                if(horResultsOne.Count == 3)
+                {
+                    ShowResult(PlayerSet.first, horResultsOne);
+                    isWin = true;
+                    break;
+                }
+            }
+            if (isWin) return;
+
+
+
+            List<Result> verResultsOne = new List<Result>();
+            for (int col = 0; col < matrix; ++col)
+            {
+                verResultsOne = results_1.Where(x => x.pos.y == col).ToList();
+
+                if (verResultsOne.Count == 3)
+                {
+                    ShowResult(PlayerSet.first, verResultsOne);
+                    isWin = true;
+                    break;
+                }
+            }
+            if (isWin) return;
+
+
+            List<Result> hozResultsOne = results_1.Where(r => r.pos.x == r.pos.y).ToList();
+
+            isWin = hozResultsOne.Count == 3;
+            if (isWin) 
+            { ShowResult(PlayerSet.first, hozResultsOne);
+              return; 
             }
 
             int dSum = matrix - 1;
-            for (int i = 0; i < results_1.Count; i++)
-            {
-                isWin = results_1[i].pos.x + results_1[i].pos.y == dSum;
+            List<Result> antihozResultsOne = results_1.Where(r => r.pos.x + r.pos.y == dSum).ToList();
 
-                if(!isWin)
-                    isWin = results_1[i].pos.x == results_1[i].pos.y;
-
-                if (!isWin)
-                    break;
-            }
-
-            for (int i = 0; i < results_1.Count; i++)
-            {
-                isWin = results_1[i].pos.x == results_1[i].pos.y;
-
-                if (!isWin)
-                    break;
-            }
-
+            isWin = antihozResultsOne.Count == 3;
             if (isWin)
             {
-                ShowResult(PlayerSet.first, results_1);
+                ShowResult(PlayerSet.first, antihozResultsOne);
                 return;
             }
+
         }
 
         //Check player two result
@@ -246,8 +268,8 @@ public class Grid : MonoBehaviour,ITile
     {
         string message = playerSet switch
         {
-            PlayerSet.first => "Player 1 Win",
-            PlayerSet.second => "Player 2 Win",
+            PlayerSet.first => "Player  has Win",
+            PlayerSet.second => "Computer has Win",
             _ => throw new System.NotImplementedException()
         };
 

@@ -91,7 +91,7 @@ public class Tile : MonoBehaviour
 
     void RestartAction()
     {
-        markImage.sprite = null;
+       // markImage.sprite = null;
         markImage.enabled = false;
         EnableInteract(true);
 

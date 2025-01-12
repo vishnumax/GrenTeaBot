@@ -15,6 +15,8 @@ public class GameManager : MonoBehaviour,IStat
     private void GameSelectAction(GameType type)
     {
         PageNavigator.Instance.NavAction(PageSet.Game);
+
+        GameActions.RestartAction();
     }
 
 

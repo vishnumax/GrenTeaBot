@@ -49,9 +49,12 @@ public class PageNavigator : MonoBehaviour
         {
             string name = currentPage.panel.name;
 
-            for (int i = 0; i < pageParent.childCount; i++)
+            Debug.LogWarning("Loading ..." + name + pageParent.childCount);
+
+            for (int i = 0; i < pageParent.childCount; ++i)
             {
                 GameObject child = pageParent.GetChild(i).gameObject;
+                Debug.Log("Child.." + child.name);
 
                 if (child.name.Contains(name))
                 {
