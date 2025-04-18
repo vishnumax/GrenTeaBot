@@ -13,7 +13,7 @@ public interface IStat
 
 public class StatusManager : MonoBehaviour
 {
-    static StatusManager instance;  
+    static StatusManager instance;
     public static StatusManager Instance { get { return instance; } }
 
     [SerializeField] TMP_Text statusMessage;
@@ -25,6 +25,12 @@ public class StatusManager : MonoBehaviour
     [Header("Buttons:")]
     [SerializeField] Button playBtn;
     [SerializeField] Button homeBtn;
+
+    [Header("Star Settings:")]
+    [SerializeField] Sprite loss;
+    [SerializeField] Sprite win;
+
+    [SerializeField] Image star;
 
     public IStat callback;
 
@@ -42,21 +48,36 @@ public class StatusManager : MonoBehaviour
         statusMessage.text = message;
     }
 
-    public void EnableMenu(bool enable,string message)
+    public void EnableMenu(bool enable, string message, ResultStat stats)
     {
+        star.sprite = stats switch
+        {
+            ResultStat.win => win,
+            ResultStat.loss => loss,
+        };
+
+        StartCoroutine(EnableMenuAction(enable, message));
+    }
+
+    IEnumerator EnableMenuAction(bool enable, string message)
+    {
+        yield return new WaitForSeconds(3.0f);
+
         panel.SetActive(enable);
-        messageText.text = message; 
+        messageText.text = message;
     }
 
     void Home()
     {
         callback.HomeAction();
-        panel.SetActive(false); 
+        panel.SetActive(false);
     }
 
     void Play()
     {
         callback.PlayAction();
-        panel.SetActive(false); 
+        panel.SetActive(false);
     }
 }
+
+public enum ResultStat {win,loss}

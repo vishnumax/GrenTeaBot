@@ -16,5 +16,13 @@ namespace TictTackGame
             public static Action StopAction;
         }
     }
+
+    namespace Data
+    {
+        public static class GameValues
+        {
+            public static GameType currentGameType;
+        }
+    }
 }
 

@@ -25,14 +25,18 @@ public class Tile : MonoBehaviour
 
     [SerializeField] Vector2 pos;
 
-    public Vector2 Position => pos; 
+    public Vector2 Position => pos;
 
 
     public ITile callback;
 
+    bool isDone = false;
+
 
     private void OnEnable()
     {
+        isDone = true;
+
         if (button == null)
             button = this.GetComponent<Button>();
 
@@ -47,6 +51,7 @@ public class Tile : MonoBehaviour
 
     private void StopAction()
     {
+        isDone = true;
         EnableInteract(false);
     }
 
@@ -57,6 +62,7 @@ public class Tile : MonoBehaviour
         button.onClick.RemoveAllListeners();
 
         GameActions.StopAction -= StopAction;
+        GameActions.RestartAction -= RestartAction;
     }
 
 
@@ -73,20 +79,34 @@ public class Tile : MonoBehaviour
             PlayerSet.second => playerTwo,
             _ => throw new System.NotImplementedException(),
         };
+
+        markImage.color = set switch
+        {
+            PlayerSet.first => Color.red,
+            PlayerSet.second => Color.blue,
+            _ => throw new System.NotImplementedException(),
+        };
     }
+
 
     public void Mark()
     {
         markImage.enabled = true;
         EnableInteract(false);
 
+        if(!isDone)
         callback.SetTile(playerSet, pos);
     }
 
 
     public void WinAction()
     {
-        markImage.color = Color.green;
+        InvokeRepeating("ToggleBlink", 2, 0.3f);
+    }
+
+    void ToggleBlink()
+    {
+        markImage.color = markImage.color == Color.white? Color.green : Color.white;
     }
 
     void RestartAction()
@@ -95,7 +115,10 @@ public class Tile : MonoBehaviour
         markImage.enabled = false;
         EnableInteract(true);
 
-        markImage.color = Color.white;  
+        isDone = false;
+        CancelInvoke("ToggleBlink");
+
+        markImage.color = Color.red;  
     }
 
 }

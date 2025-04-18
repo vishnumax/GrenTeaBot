@@ -20,9 +20,13 @@ public class Grid : MonoBehaviour,ITile
     [Header("Matrix:")]
     [SerializeField] int matrix;
 
+    bool isDone = false;
+
 
     private void Start()
     {
+        isDone = false;
+
         results.Clear();
 
         for (int i = 0; i < tiles.Count; i++)
@@ -32,9 +36,14 @@ public class Grid : MonoBehaviour,ITile
 
         currentPlayer = PlayerSet.first;
 
+        for (int i = 0; i < tiles.Count; i++)
+        {
+            tiles[i].SetPlayer(currentPlayer);
+        }
+
         PlayerTurnAction();
 
-        StatusManager.Instance.Message("Player 1 Turn");
+        StatusManager.Instance.Message("Your Turn");
 
         GameActions.RestartAction += RestartAction;
     }
@@ -50,36 +59,58 @@ public class Grid : MonoBehaviour,ITile
     /// </summary>
     public void PlayerTurnAction()
     {
+        if (isDone) return;
+
         for (int i = 0; i < tiles.Count; i++)
         {
             tiles[i].SetPlayer(currentPlayer);
         }
 
         //Computer play
-        if(currentPlayer == PlayerSet.second)
+        if (currentPlayer == PlayerSet.second)
         {
             Debug.LogWarning("Computer play !!!");
-
-            for(int i=0; i<tiles.Count; i++) { tiles[i].EnableInteract(false); }
 
             Vector2 pos = Vector2.zero;
 
             List<Tile> unMarktiles = tiles.Where(x => !x.isMark).ToList();
 
-            if(unMarktiles.Count ==0)
+            Debug.LogWarning("Computer play >>> " + unMarktiles.Count);
+
+            if (unMarktiles.Count == 0)
             {
-                StatusManager.Instance.EnableMenu(true, "No more turns");
+                StatusManager.Instance.EnableMenu(true, "DRAW", ResultStat.loss);
                 return;
             }
 
             int randomIndex = Random.Range(0, unMarktiles.Count);
-            
-            Tile tile= unMarktiles[randomIndex];
+
+            Tile tile = unMarktiles[randomIndex];
             tile.Mark();
         }
         else
-            for (int i = 0; i < tiles.Count; i++) { tiles[i].EnableInteract(true); }
+        {
+            Vector2 pos = Vector2.zero;
 
+            List<Tile> unMarktiles = tiles.Where(x => !x.isMark).ToList();
+
+            Debug.LogWarning("player play >>> " + unMarktiles.Count);
+
+            if (unMarktiles.Count == 0)
+            {
+                StatusManager.Instance.EnableMenu(true, "DRAW", ResultStat.loss);
+                return;
+            }
+
+
+            for (int i = 0; i < tiles.Count; i++) { tiles[i].EnableInteract(true); }
+        }
+    }
+
+    IEnumerator PlayComputer()
+    {
+        yield return new WaitForSeconds(3.0f);
+        PlayerTurnAction();
     }
 
     /// <summary>
@@ -107,8 +138,9 @@ public class Grid : MonoBehaviour,ITile
 
         results.Add(result);
 
-        CheckResult(); 
+        CheckResult();
     }
+
 
     /// <summary>
     /// Turn the player
@@ -117,18 +149,26 @@ public class Grid : MonoBehaviour,ITile
     /// <exception cref="System.NotImplementedException"></exception>
     public void PlayerSelect(PlayerSet playerSet) 
     { 
+        if(isDone) return;  
+
         currentPlayer = playerSet;
 
-        PlayerTurnAction();
+        if(currentPlayer == PlayerSet.second)
+        for (int i = 0; i < tiles.Count; i++) { tiles[i].EnableInteract(false); }
 
         string message = playerSet switch
         {
-            PlayerSet.first => "Player Turn",
-            PlayerSet.second => "Computer Turn",
+            PlayerSet.first => "YOUR TURN",
+            PlayerSet.second => "CPU THINKING...",
             _ => throw new System.NotImplementedException()
         };
 
-        //StatusManager.Instance.Message(message);
+        StatusManager.Instance.Message(message);
+
+        if(currentPlayer == PlayerSet.first)
+            PlayerTurnAction();
+        else
+            StartCoroutine(PlayComputer());
     }
 
     #region RESULT
@@ -154,7 +194,7 @@ public class Grid : MonoBehaviour,ITile
         Debug.LogWarning("First player count: " + results_1.Count);
 
         //Check Player one Result
-        if (results_1.Count >=3)
+        if (results_1.Count >=matrix)
         {
             //results_1 = results_1.TakeLast(3).ToList();
 
@@ -162,29 +202,27 @@ public class Grid : MonoBehaviour,ITile
 
             bool isWin = false;
 
-
             List<Result> horResultsOne = new List<Result>(); 
             for(int row =0; row< matrix;++row)
             {
                 horResultsOne = results_1.Where(x=>x.pos.x == row).ToList();
 
-                if(horResultsOne.Count == 3)
+                if(horResultsOne.Count == matrix)
                 {
                     ShowResult(PlayerSet.first, horResultsOne);
                     isWin = true;
                     break;
                 }
             }
+
             if (isWin) return;
-
-
 
             List<Result> verResultsOne = new List<Result>();
             for (int col = 0; col < matrix; ++col)
             {
                 verResultsOne = results_1.Where(x => x.pos.y == col).ToList();
 
-                if (verResultsOne.Count == 3)
+                if (verResultsOne.Count == matrix)
                 {
                     ShowResult(PlayerSet.first, verResultsOne);
                     isWin = true;
@@ -196,7 +234,7 @@ public class Grid : MonoBehaviour,ITile
 
             List<Result> hozResultsOne = results_1.Where(r => r.pos.x == r.pos.y).ToList();
 
-            isWin = hozResultsOne.Count == 3;
+            isWin = hozResultsOne.Count == matrix;
             if (isWin) 
             { ShowResult(PlayerSet.first, hozResultsOne);
               return; 
@@ -205,7 +243,7 @@ public class Grid : MonoBehaviour,ITile
             int dSum = matrix - 1;
             List<Result> antihozResultsOne = results_1.Where(r => r.pos.x + r.pos.y == dSum).ToList();
 
-            isWin = antihozResultsOne.Count == 3;
+            isWin = antihozResultsOne.Count == matrix;
             if (isWin)
             {
                 ShowResult(PlayerSet.first, antihozResultsOne);
@@ -214,10 +252,14 @@ public class Grid : MonoBehaviour,ITile
 
         }
 
+        Debug.LogWarning("Second player count: " + results_2.Count);
+
         //Check player two result
-        if (results_2.Count >= 3)
+        if (results_2.Count >= matrix)
         {
-            results_2 = results_2.TakeLast(3).ToList();
+            results_2 = results_2.TakeLast(matrix).ToList();
+
+            Debug.LogWarning("Second player count: " + results_2.Count);
 
             Vector2 firstVector = results_2[0].pos;
 
@@ -268,36 +310,52 @@ public class Grid : MonoBehaviour,ITile
     {
         string message = playerSet switch
         {
-            PlayerSet.first => "Player  has Win",
-            PlayerSet.second => "Computer has Win",
+            PlayerSet.first => "YOU WIN",
+            PlayerSet.second => "YOU LOST",
             _ => throw new System.NotImplementedException()
         };
 
-        StatusManager.Instance.EnableMenu(true,message);
 
-        foreach(Result result in results)
+        foreach (Result result in results)
         {
-           Tile tile = tiles.Find(x => x.Position == result.pos);
+            Tile tile = tiles.Find(x => x.Position == result.pos);
 
-            if(tile != null)
+            if (tile != null)
             {
                 tile.WinAction();
             }
         }
 
+        ResultStat stat = playerSet switch
+        {
+            PlayerSet.first => ResultStat.win,
+            PlayerSet.second => ResultStat.loss
+        };
+
+        StatusManager.Instance.EnableMenu(true, message,stat);
+
+        isDone = true;
         GameActions.StopAction();
     }
     #endregion
 
     void RestartAction()
     {
+        Debug.Log("RESTARTING ....");
+
+        isDone = false;
         results.Clear();
 
         currentPlayer = PlayerSet.first;
 
+        for (int i = 0; i < tiles.Count; i++)
+        {
+            tiles[i].SetPlayer(currentPlayer);
+        }
+
         PlayerTurnAction();
 
-        StatusManager.Instance.Message("Player 1 Turn");
+        StatusManager.Instance.Message("Your Turn");
 
     }
 }

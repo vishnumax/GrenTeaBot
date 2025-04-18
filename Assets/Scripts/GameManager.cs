@@ -2,9 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TictTackGame.Act;
+using TictTackGame.Data;
+
 using UnityEngine;
 
-public class GameManager : MonoBehaviour,IStat
+public class GameManager : MonoBehaviour, IStat
 {
     private void Start()
     {
@@ -14,8 +16,11 @@ public class GameManager : MonoBehaviour,IStat
 
     private void GameSelectAction(GameType type)
     {
-        PageNavigator.Instance.NavAction(PageSet.Game);
+        Debug.LogWarning("Game Type: " + type.ToString());
 
+        GameValues.currentGameType = type;
+
+        PageNavigator.Instance.NavAction(PageSet.Game);
         GameActions.RestartAction();
     }
 
