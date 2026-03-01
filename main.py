@@ -79,15 +79,14 @@ async def handle_message(update, context):
     user_text = update.message.text
     if ((_ := randint(1, 100)) <= RAN*100) or '@TT_GrenTeaBot' in user_text:
         try:
+            print(f'  Содержание: {user_text}'); logs(f'> Содержание: {user_text}')            
             if update.message.chat_id != ID:
                 return
             if not user_text:
                 return
-            if update.message.from_user.is_bot:
-                return
-            print(f'  Содержание: {user_text}'); logs(f'> Содержание: {user_text}')
+            print('  Генерация ответа...')
             response = ollama.chat(model=MODEL, messages=[{'role': 'system', 'content': prompt}, {'role': 'user', 'content': user_text}])
-            await update.message.reply_text(response['message']['content'], parse_mode=ParseMode.MARKDOWN)
+            await update.message.reply_text(response['message']['content'], parse_mode=ParseMode.MARKDOWN_V2)
             print(f"< ИИ: {response['message']['content']}"); logs(f"ИИ: {response['message']['content']}")
         except Exception as e: print('< Ошибка:', e); logs((f'< Ошибка: {e}'))
     else: print(f'< Сообщение осталось без ответа, выпало: {_}'); logs('< Сообщение осталось без ответа')
@@ -104,3 +103,4 @@ application.run_polling()
 # 1. Поддержка истории чата, хотя бы пары сообщений для контекста
 # 2. Возможность отвечать если обращабтся конкретно к ИИ
 # 3. Придумать ещё чего-то для будущих версий
+# 4. Написать веб интерфейс, чтобы лёжа на диване смотреть телефон и видеть статус бота, либо с основного ПК, you know
