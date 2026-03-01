@@ -86,7 +86,7 @@ async def handle_message(update, context):
                 return
             print('  Генерация ответа...')
             response = ollama.chat(model=MODEL, messages=[{'role': 'system', 'content': prompt}, {'role': 'user', 'content': user_text}])
-            await update.message.reply_text(response['message']['content'], parse_mode=ParseMode.MARKDOWN_V2)
+            await update.message.reply_text(response['message']['content'], parse_mode=ParseMode.HTML)
             print(f"< ИИ: {response['message']['content']}"); logs(f"ИИ: {response['message']['content']}")
         except Exception as e: print('< Ошибка:', e); logs((f'< Ошибка: {e}'))
     else: print(f'< Сообщение осталось без ответа, выпало: {_}'); logs('< Сообщение осталось без ответа')
