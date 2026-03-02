@@ -20,7 +20,7 @@ KEY = False # Описание ниже | The description is below
 ID = -1002622534151 # Поменяйте на свой ID группы | Swap it for your own group ID
 RAN = 0.3 # Шанс, что бот ответит на сообщение | Chance that the bot will reply to the message
 LOGS = True # Если нужны или не нужны логи | If logs are needed or not needed
-MODEL = 'qwen3:4b' # Используемая модель | The AI ​​model used
+MODEL = 'gpt-oss:20b' # Используемая модель | The AI ​​model used
 
 
 # Достать ключ
@@ -87,7 +87,9 @@ async def handle_message(update, context):
             print('  Генерация ответа...')
             response = ollama.chat(model=MODEL, messages=[{'role': 'system', 'content': prompt}, {'role': 'user', 'content': user_text}], options={"num_predict": 4096})
             try: await update.message.reply_text(response['message']['content'], parse_mode=ParseMode.HTML)
-            except: await update.message.reply_text(f"```html\n{response['message']['content']}```")
+            except:
+                try: await update.message.reply_text(response['message']['content'], parse_mode=ParseMode.MARKDOWN)
+                except: await update.message.reply_text(f"```html\n{response['message']['content']}```")
             print(f"< ИИ: {response['message']['content']}"); logs(f"ИИ: {response['message']['content']}")
         except Exception as e: print('< Ошибка:', e); logs((f'< Ошибка: {e}'))
     else: print(f'< Сообщение осталось без ответа, выпало: {_}'); logs('< Сообщение осталось без ответа')
