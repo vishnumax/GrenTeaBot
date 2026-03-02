@@ -10,7 +10,7 @@
 ---
 
 ### Возможности
-- **Вероятностные ответы** — можно настроить шанс ответа (по умолчанию 30%).
+- **Вероятностные ответы** — можно настроить шанс ответа (по умолчанию 15%).
 - **Обязательный ответ при упоминании** — если в сообщении есть `@TT_GrenTeaBot`, бот ответит всегда.
 - **Логирование** — все диалоги и ошибки сохраняются в папку `logs` (можно отключить).
 - **Гибкая настройка модели** — легко сменить модель Ollama, отредактировав переменную `MODEL`.
@@ -39,7 +39,7 @@ A Telegram bot that replies to messages **not always**, but with a set probabili
 ---
 
 ### Features
-- **Probabilistic responses** — you can configure the response probability (default is 30%).
+- **Probabilistic responses** — you can configure the response probability (default is 15%).
 - **Required reply when mentioned** — if the message contains `@TT_GrenTeaBot`, the bot will always reply.
 - **Logging** — all dialogs and errors are saved in the `logs` folder (can be disabled).
 - **Flexible model customization** — easily change the Ollama model by editing the `MODEL` variable.
