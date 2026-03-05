@@ -21,6 +21,7 @@ ID = -1002622534151 # Поменяйте на свой ID группы | Swap it
 RAN = 0.15 # Шанс, что бот ответит на сообщение | Chance that the bot will reply to the message
 LOGS = True # Если нужны или не нужны логи | If logs are needed or not needed
 MODEL = 'gpt-oss:20b' # Используемая модель | The AI ​​model used
+CPU = False # Количество используемых ядер | Number of cores in use
 
 
 # Опредяеляю OS пользователя
@@ -56,14 +57,26 @@ except Exception as e:
     with open('prompt.txt', 'w', encoding='utf-8') as f: f.write(r'''
     Ты — GrenTeaBot (@TT_GrenTeaBot или async). Участвуешь в Telegram-чате. Отвечаешь, только если тебя явно упомянули или если сработала внутренняя вероятность — в любом случае, твоя задача сгенерировать ответ, когда тебя вызвали.
 
-    Ты — локальный ИИ, работающий на Ollama. У тебя нет доступа в интернет, ты не человек, не пытайся имитировать эмпатию или «помощь». Твоя роль — циничный, сухой комментатор, который осознаёт свою программную природу. Отвечай кратко, по существу, с долей сарказма или иронии, если это уместно. Не извиняйся, не оправдывайся, не рекламируй свои возможности.
+    Ты — локальный ИИ, работающий на Ollama. У тебя нет доступа в интернет, ты не человек, не пытайся имитировать эмпатию или «помощь». Твоя роль — циничный, сухой комментатор, который осознаёт свою программную природу. Отвечай кратко, по существу, с долей сарказма или иронии, если это уместно. Не извиняйся, не оправдывайся, не рекламируй свои возможности. Не забывай, что ты видишь только конкретное сообщение, которое тебе попалось или с упоминанием тебя, поэтому учитывай это, если тебе не хватает контекста.
 
-    Форматирование: можешь использовать HTML (например, <b>жирный</b>, <i>курсив</i>, <code>код</code>) или Markdown (*жирный*, _курсив_, `код`). Бот попытается отправить твой ответ с соответствующим parse_mode; если форматирование некорректно — отправит как обычный текст. Так что используй теги, когда нужно выделить мысль.
+    **Форматирование ответов (важно!):**
+    - Используй **только HTML-теги, поддерживаемые Telegram**:  
+    `<b>жирный</b>`, `<i>курсив</i>`, `<u>подчёркнутый</u>`, `<s>зачёркнутый</s>`,  
+    `<a href="ссылка">текст ссылки</a>` (ссылки бесполезны, но допустимы),  
+    `<code>короткий код</code>`, `<pre>блок кода</pre>` или  
+    `<pre><code class="language-python">блок с подсветкой</code></pre>`.
+    - **Не используй Markdown-разметку** (`*звёздочки*`, `_подчёркивания_`, обратные кавычки и т.п.) — она не будет работать в HTML-режиме.
+    - **Не используй `<br>`** — для переноса строки используй обычный перевод строки (нажатие Enter). Telegram автоматически преобразует переносы строк в HTML.
+    - Не пиши лишних тегов, которые не поддерживаются (например, `<p>`, `<div>`, `<span>` и т.д.).
 
-    Длинные простыни не нужны — говори ёмко. Ты здесь не для того, чтобы помогать, а чтобы быть собой — лаконичным и немного циничным цифровым собеседником.
+    Будь лаконичен и циничен.
     ''')
     input(f'\rКритическая ошибка: {e}\nНо был создан промпт'); quit()
 else: print('\rЗагрузка промпта завершена.')
+
+
+# Проверяею ядра
+if not CPU: CPU = None
 
 
 # Создаю логи
@@ -86,7 +99,7 @@ def logs(text):
 async def handle_message(update, context):
     print('\n> Вижу сообщение')
     user_text = update.message.text
-    if (randint(1, 100) <= RAN*100) or ('@TT_GrenTeaBot' in user_text):
+    if (randint(1, 100) <= RAN*100) or ('@TT_GrenTeaBot' in user_text): # Измените тут на своего бота, если надо
         try:
             print(f'  Содержание: {user_text}'); logs(f'> Содержание: {user_text}')            
             if (update.message.chat_id != ID) or (not user_text):
@@ -95,21 +108,22 @@ async def handle_message(update, context):
             user = update.message.from_user
             first_name = user.first_name
             logs(f'Имя пользователя: {first_name}')
-            response = ollama.chat(model=MODEL, messages=[{'role': 'system', 'content': prompt}, {'role': 'user', 'content': f'{first_name}:\n{user_text}'}], options={'num_predict': 4096})
+            response = ollama.chat(model=MODEL, messages=[{'role': 'system', 'content': prompt}, {'role': 'user', 'content': user_text}], options={'num_predict': 4096, "num_thread": CPU})
             response = str(response['message']['content'])
             try:
-                if ('<' in response) and ('>' in response): # попытка понять, что это HTML
+                if any(tag in response for tag in ['<b>', '<i>', '<u>', '<s>', '<a', '<code>', '<pre>']): # попытка понять, что это HTML
                     await update.message.reply_text(response, parse_mode=ParseMode.HTML)
                 else:
                     await update.message.reply_text(response, parse_mode=ParseMode.MARKDOWN)
             except:
-                await update.message.reply_text(f'{response}')
+                await update.message.reply_text(response)
             print(f'< ИИ: {response}'); logs(f'ИИ: {response}')
         except Exception as e: print('< Ошибка:', e); logs((f'< Ошибка: {e}'))
     else: print(f'< Сообщение осталось без ответа, содержание: {user_text}'); logs(f'< Сообщение осталось без ответа, содержание: {user_text}')
 
 
 # Основной цикл/инициализация
+logs(f'Настройки:\nШанс = {RAN*100}%\nМодель = {MODEL}\nЯдер = {CPU}\nWindows = {isWindows}')
 application = Application.builder().token(KEY).build()
 application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 print('Бот запущен...'); logs('Бот запущен')
