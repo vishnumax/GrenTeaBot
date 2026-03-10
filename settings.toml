@@ -9,7 +9,7 @@ ID = -1002622534151     # Поменяйте на свой ID группы | Swa
 Random = 0.15           # Шанс, что бот ответит на сообщение | Chance that the bot will reply to the message
 
 [Ollama]
-Nodel = "gpt-oss:20b"   # Используемая модель | The AI ​​model used
+Model = "gpt-oss:20b"   # Используемая модель | The AI ​​model used
 CPU = false             # Количество используемых ядер | Number of cores in use
 Prompt = "Prompt-8b+RU" # Выберите из: | Choose from:
                         #   Prompt-8b+RU - для больших моделей с поддержкой русского | Prompt-8b+RU - for large models with Russian support
@@ -23,3 +23,5 @@ Logs = true             # Если нужны или не нужны логи | 
 [Translation]
 Translate = false       # Включить перевод на язык пользователя | Enable translation into the user's language
 UserLanguage = "RU"     # Какой у пользователя язык? | What is the user's language?
+
+# TODO не забыть исправить описания, чтобы пользоватлеь понял что тут есть что, а то сейчас слишком усложнено (например с тем же KEY или Prompt)
