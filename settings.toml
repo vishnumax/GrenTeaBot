@@ -1,0 +1,25 @@
+[Bot]
+                        # Вставить ключ или директорию (только для Windows) | Insert key or directory (Windows only)
+Key = false             # Описание ниже | The description is below
+                        # Напишите Key = false, если хотите, чтобы программа нашла ключ в C:\MichiPythonFiles\GreenTeaBot\key
+                        # Напишите Key = {ключ}, если хотите, чтобы программа не искала ключ в файлах
+                        # Write Key = false if you want the program to find the key in C:\MichiPythonFiles\GreenTeaBot\key
+                        # Write Key = {key} if you want the program not to search for the key in the files
+ID = -1002622534151     # Поменяйте на свой ID группы | Swap it for your own group ID
+Random = 0.15           # Шанс, что бот ответит на сообщение | Chance that the bot will reply to the message
+
+[Ollama]
+Nodel = "gpt-oss:20b"   # Используемая модель | The AI ​​model used
+CPU = false             # Количество используемых ядер | Number of cores in use
+Prompt = "Prompt-8b+RU" # Выберите из: | Choose from:
+                        #   Prompt-8b+RU - для больших моделей с поддержкой русского | Prompt-8b+RU - for large models with Russian support
+                        #   Prompt-4b-RU - для маленьких моделей с поддержкой русского | Prompt-4b-RU - for small models with Russian support
+                        #   Prompt-8b+EN - для больших моделей без поддержки русского | Prompt-8b+EN - for large models without Russian support
+                        #   Prompt-4b-EN - для маленьких моделей без поддержки русского | Prompt-4b-EN - for small models without Russian support
+
+[Script]
+Logs = true             # Если нужны или не нужны логи | If logs are needed or not needed
+
+[Translation]
+Translate = false       # Включить перевод на язык пользователя | Enable translation into the user's language
+UserLanguage = "RU"     # Какой у пользователя язык? | What is the user's language?
